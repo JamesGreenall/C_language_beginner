@@ -1,0 +1,1814 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C 语言基础语法知识图谱</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f4f6f7;
+      --surface: #ffffff;
+      --surface-soft: #f8fafb;
+      --ink: #172027;
+      --muted: #66727c;
+      --line: #d8dfe3;
+      --line-strong: #b8c2c8;
+      --accent: #176b69;
+      --core: #c44f3f;
+      --prerequisite: #536b7a;
+      --related: #8a9298;
+      --focus: #0b6bcb;
+      --header-height: 68px;
+      --control-height: 58px;
+      font-family: "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
+      font-synthesis: none;
+    }
+
+    * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--page);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+      color: inherit;
+    }
+
+    button,
+    select,
+    input {
+      border-radius: 6px;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    a:focus-visible,
+    .node:focus-visible .node-shape {
+      outline: 3px solid rgba(11, 107, 203, 0.24);
+      outline-offset: 2px;
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      width: 100%;
+      height: 100%;
+      background: var(--surface);
+    }
+
+    .app-header {
+      min-height: var(--header-height);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+      z-index: 5;
+    }
+
+    .brand {
+      min-width: 270px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    .brand-meta {
+      margin-top: 4px;
+      display: flex;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 620px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      height: 40px;
+      padding: 0 38px 0 34px;
+      border: 1px solid var(--line-strong);
+      background: var(--surface-soft);
+    }
+
+    #searchInput:focus {
+      background: var(--surface);
+      border-color: var(--focus);
+    }
+
+    .clear-search {
+      position: absolute;
+      right: 6px;
+      top: 5px;
+      width: 30px;
+      height: 30px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 17px;
+    }
+
+    .control-bar {
+      min-height: var(--control-height);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-soft);
+      overflow-x: auto;
+      z-index: 4;
+    }
+
+    .segmented {
+      display: inline-grid;
+      grid-auto-flow: column;
+      grid-auto-columns: max-content;
+      height: 36px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--surface);
+      flex: 0 0 auto;
+    }
+
+    .segmented button {
+      min-width: 70px;
+      padding: 0 11px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .segmented button.active {
+      background: #e7efef;
+      color: #124f4d;
+      font-weight: 700;
+    }
+
+    .control-select {
+      height: 36px;
+      min-width: 150px;
+      padding: 0 30px 0 10px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    #mobileModuleSelect {
+      display: none;
+    }
+
+    .toggle-label {
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .toggle-label input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .view-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 5px;
+      flex: 0 0 auto;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .icon-button:hover {
+      border-color: var(--line-strong);
+      background: #eef3f4;
+    }
+
+    .workspace {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 224px minmax(0, 1fr) 340px;
+      background: var(--surface);
+    }
+
+    .module-panel,
+    .detail-panel {
+      min-height: 0;
+      overflow-y: auto;
+      background: var(--surface);
+    }
+
+    .module-panel {
+      padding: 16px 12px;
+      border-right: 1px solid var(--line);
+    }
+
+    .panel-label {
+      margin: 0 8px 10px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .module-list {
+      display: grid;
+      gap: 3px;
+    }
+
+    .module-button {
+      width: 100%;
+      min-height: 42px;
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr) 24px;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .module-button:hover {
+      background: var(--surface-soft);
+    }
+
+    .module-button.active {
+      border-color: var(--line);
+      background: #edf3f3;
+      font-weight: 700;
+    }
+
+    .module-swatch {
+      width: 9px;
+      height: 9px;
+      border-radius: 2px;
+    }
+
+    .module-count {
+      color: var(--muted);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .legend {
+      margin-top: 24px;
+      padding: 16px 8px 0;
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+    }
+
+    .legend-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend-line {
+      height: 0;
+      border-top: 2px solid var(--prerequisite);
+      position: relative;
+    }
+
+    .legend-line::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: -4px;
+      width: 6px;
+      height: 6px;
+      border-top: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      transform: rotate(45deg);
+    }
+
+    .legend-line.core {
+      color: var(--core);
+      border-top: 3px solid var(--core);
+    }
+
+    .legend-line.prerequisite {
+      color: var(--prerequisite);
+    }
+
+    .legend-line.related {
+      color: var(--related);
+      border-top: 2px dashed var(--related);
+    }
+
+    .legend-line.related::after {
+      display: none;
+    }
+
+    .graph-shell {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background-color: #f7f9fa;
+      background-image:
+        linear-gradient(#e8edef 1px, transparent 1px),
+        linear-gradient(90deg, #e8edef 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    #graphSvg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+    }
+
+    #graphSvg.panning {
+      cursor: grabbing;
+    }
+
+    .loading-state {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(247, 249, 250, 0.92);
+      color: var(--muted);
+      font-size: 14px;
+      z-index: 3;
+    }
+
+    .loading-state.error {
+      color: #9a352d;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .graph-status {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      min-height: 30px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      border: 1px solid rgba(184, 194, 200, 0.88);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--muted);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      pointer-events: none;
+    }
+
+    .module-region rect {
+      fill: rgba(255, 255, 255, 0.58);
+      stroke-width: 1.4;
+      stroke-dasharray: 5 5;
+    }
+
+    .region-title {
+      font-size: 15px;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .region-count {
+      font-size: 11px;
+      fill: #6e7880;
+      pointer-events: none;
+    }
+
+    .edge {
+      fill: none;
+      stroke-linecap: round;
+      transition: opacity 140ms ease, stroke-width 140ms ease;
+      pointer-events: stroke;
+      cursor: pointer;
+    }
+
+    .edge.core {
+      stroke: var(--core);
+      stroke-width: 2.6;
+      marker-end: url(#arrow-core);
+    }
+
+    .edge.prerequisite {
+      stroke: var(--prerequisite);
+      stroke-width: 1.7;
+      marker-end: url(#arrow-prerequisite);
+    }
+
+    .edge.related {
+      stroke: var(--related);
+      stroke-width: 1.5;
+      stroke-dasharray: 7 6;
+    }
+
+    .edge.is-hidden,
+    .edge-label.is-hidden {
+      display: none;
+    }
+
+    .edge.is-dimmed {
+      opacity: 0.08;
+    }
+
+    .edge.is-highlighted {
+      opacity: 1;
+      stroke-width: 4;
+    }
+
+    .edge-label {
+      display: none;
+      fill: #47545d;
+      font-size: 10px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      paint-order: stroke;
+      stroke: rgba(255, 255, 255, 0.96);
+      stroke-width: 5px;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .show-labels .edge-label {
+      display: block;
+    }
+
+    .edge-label.is-dimmed {
+      opacity: 0.08;
+    }
+
+    .node {
+      cursor: pointer;
+      transition: opacity 140ms ease;
+    }
+
+    .node-shape {
+      fill: #ffffff;
+      stroke-width: 2;
+      rx: 6px;
+      ry: 6px;
+      filter: url(#node-shadow);
+      transition: stroke-width 140ms ease, fill 140ms ease;
+    }
+
+    .node:hover .node-shape {
+      stroke-width: 3;
+      fill: #fbfdfd;
+    }
+
+    .node-id {
+      font-size: 11px;
+      font-weight: 800;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+
+    .node-title {
+      fill: #1f2a31;
+      font-size: 12px;
+      font-weight: 650;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+    }
+
+    .node.is-dimmed {
+      opacity: 0.13;
+    }
+
+    .node.is-neighbor {
+      opacity: 1;
+    }
+
+    .node.is-selected .node-shape {
+      stroke-width: 4;
+      fill: #fffefb;
+    }
+
+    .node.is-path .node-shape {
+      stroke-width: 3.2;
+      stroke-dasharray: 8 3;
+    }
+
+    .node.is-search-match .node-shape {
+      stroke: var(--focus) !important;
+      stroke-width: 4;
+    }
+
+    .detail-panel {
+      border-left: 1px solid var(--line);
+    }
+
+    .detail-content {
+      padding: 18px 18px 28px;
+    }
+
+    .detail-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .detail-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 2px;
+    }
+
+    .detail-content h2 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.35;
+    }
+
+    .detail-summary {
+      margin: 10px 0 16px;
+      color: #4f5d66;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .doc-button {
+      width: 100%;
+      height: 40px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #155e5c;
+      border-radius: 6px;
+      background: #176b69;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .doc-button:hover {
+      background: #125957;
+    }
+
+    .relation-section {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .relation-section h3 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 0 8px;
+      font-size: 13px;
+    }
+
+    .relation-section h3 span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .relation-items {
+      display: grid;
+      gap: 5px;
+    }
+
+    .relation-item {
+      width: 100%;
+      min-height: 42px;
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border: 1px solid transparent;
+      background: var(--surface-soft);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .relation-item:hover {
+      border-color: var(--line-strong);
+      background: #ffffff;
+    }
+
+    .relation-node-id {
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .relation-node-title {
+      display: block;
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1.35;
+    }
+
+    .relation-reason {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .empty-relation {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .overview-title {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin: 18px 0 22px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .overview-stat {
+      padding: 12px 4px;
+      text-align: center;
+    }
+
+    .overview-stat + .overview-stat {
+      border-left: 1px solid var(--line);
+    }
+
+    .overview-stat strong {
+      display: block;
+      font-size: 20px;
+    }
+
+    .overview-stat span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .overview-module {
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr) 24px;
+      gap: 8px;
+      align-items: center;
+      min-height: 31px;
+      font-size: 12px;
+    }
+
+    .overview-module span:last-child {
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .relation-dialog {
+      width: min(620px, calc(100vw - 28px));
+      max-height: min(720px, calc(100vh - 28px));
+      padding: 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 18px 60px rgba(25, 37, 45, 0.24);
+      overflow: hidden;
+    }
+
+    .relation-dialog::backdrop {
+      background: rgba(31, 42, 49, 0.46);
+    }
+
+    .dialog-header {
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 14px 10px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dialog-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .dialog-close {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .dialog-close:hover {
+      border-color: var(--line);
+      background: var(--surface-soft);
+    }
+
+    .dialog-body {
+      max-height: calc(min(720px, 100vh - 28px) - 59px);
+      padding: 18px 20px 22px;
+      overflow-y: auto;
+    }
+
+    .direction-rule {
+      margin: 0 0 18px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--accent);
+      background: #edf5f4;
+      color: #33434b;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .direction-rule strong {
+      color: #124f4d;
+    }
+
+    .relation-explanations {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .relation-explanation {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 12px;
+      padding: 15px 0;
+    }
+
+    .relation-explanation + .relation-explanation {
+      border-top: 1px solid var(--line);
+    }
+
+    .relation-explanation .legend-line {
+      margin-top: 10px;
+    }
+
+    .relation-explanation h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+
+    .relation-explanation p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .relation-example {
+      margin-top: 18px;
+      color: #42515a;
+      font-size: 12px;
+      line-height: 1.75;
+    }
+
+    .relation-example code {
+      padding: 2px 5px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--surface-soft);
+      color: #24343d;
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    @media (max-width: 1180px) {
+      .workspace {
+        grid-template-columns: 190px minmax(0, 1fr) 310px;
+      }
+
+      .brand {
+        min-width: 230px;
+      }
+
+      .brand h1 {
+        font-size: 17px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      html,
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        min-height: 100vh;
+        height: auto;
+      }
+
+      .app-header {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 12px;
+      }
+
+      .brand {
+        min-width: 0;
+      }
+
+      .brand-meta {
+        margin-top: 2px;
+      }
+
+      .search-wrap {
+        max-width: none;
+      }
+
+      .control-bar {
+        flex-wrap: wrap;
+        overflow: visible;
+      }
+
+      .segmented {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      #mobileModuleSelect {
+        display: block;
+      }
+
+      .view-actions {
+        margin-left: 0;
+      }
+
+      .workspace {
+        min-height: 900px;
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(560px, 1fr) 340px;
+      }
+
+      .module-panel {
+        display: none;
+      }
+
+      .detail-panel {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      #graphSvg {
+        min-height: 560px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .control-bar {
+        gap: 7px;
+        padding: 7px 9px;
+      }
+
+      .segmented button {
+        min-width: 64px;
+        padding: 0 8px;
+      }
+
+      .control-select {
+        min-width: 138px;
+        max-width: calc(50vw - 14px);
+      }
+
+      .toggle-label {
+        display: none;
+      }
+
+      .workspace {
+        grid-template-rows: 580px 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="brand">
+        <h1>C 语言基础语法知识图谱</h1>
+        <div class="brand-meta">
+          <span id="nodeMeta">45 个知识点</span>
+          <span id="edgeMeta">关系载入中</span>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search" placeholder="搜索编号或知识点" autocomplete="off" aria-label="搜索知识点">
+        <button id="clearSearch" class="clear-search" type="button" title="清除搜索" aria-label="清除搜索">×</button>
+      </div>
+    </header>
+
+    <section class="control-bar" aria-label="图谱控制">
+      <div class="segmented" id="relationFilter" aria-label="关系类型">
+        <button type="button" class="active" data-relation="all">全部关系</button>
+        <button type="button" data-relation="core">核心前置</button>
+        <button type="button" data-relation="prerequisite">一般前置</button>
+        <button type="button" data-relation="related">横向关联</button>
+      </div>
+
+      <select id="mobileModuleSelect" class="control-select" aria-label="筛选模块">
+        <option value="all">全部模块</option>
+      </select>
+
+      <select id="pathSelect" class="control-select" aria-label="学习路径">
+        <option value="all">全部学习路径</option>
+      </select>
+
+      <label class="toggle-label">
+        <input id="labelToggle" type="checkbox">
+        <span>关系标签</span>
+      </label>
+
+      <div class="view-actions" aria-label="画布视图">
+        <button class="icon-button" type="button" data-action="relations" title="关系说明" aria-label="关系说明">?</button>
+        <button class="icon-button" type="button" data-action="zoom-in" title="放大" aria-label="放大">+</button>
+        <button class="icon-button" type="button" data-action="zoom-out" title="缩小" aria-label="缩小">−</button>
+        <button class="icon-button" type="button" data-action="fit" title="适应画布" aria-label="适应画布">□</button>
+        <button class="icon-button" type="button" data-action="reset" title="恢复节点位置" aria-label="恢复节点位置">↺</button>
+      </div>
+    </section>
+
+    <main class="workspace">
+      <aside class="module-panel" aria-label="知识模块">
+        <p class="panel-label">知识模块</p>
+        <div id="moduleList" class="module-list"></div>
+
+        <div class="legend" aria-label="关系图例">
+          <div class="legend-row"><span class="legend-line core"></span><span>核心前置</span></div>
+          <div class="legend-row"><span class="legend-line prerequisite"></span><span>一般前置</span></div>
+          <div class="legend-row"><span class="legend-line related"></span><span>横向关联</span></div>
+        </div>
+      </aside>
+
+      <section class="graph-shell" aria-label="交互式知识图谱">
+        <svg id="graphSvg" role="img" aria-label="C 语言知识点关系图" viewBox="0 0 2040 1180" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="arrow-core" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#c44f3f"></path>
+            </marker>
+            <marker id="arrow-prerequisite" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#536b7a"></path>
+            </marker>
+            <filter id="node-shadow" x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#24333c" flood-opacity="0.12"></feDropShadow>
+            </filter>
+          </defs>
+          <g id="viewport">
+            <g id="regionLayer"></g>
+            <g id="edgeLayer"></g>
+            <g id="edgeLabelLayer"></g>
+            <g id="nodeLayer"></g>
+          </g>
+        </svg>
+        <div id="loadingState" class="loading-state">正在载入图谱数据</div>
+        <div id="graphStatus" class="graph-status">等待数据</div>
+      </section>
+
+      <aside class="detail-panel" aria-live="polite">
+        <div id="detailContent" class="detail-content"></div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="relationDialog" class="relation-dialog" aria-labelledby="relationDialogTitle">
+    <header class="dialog-header">
+      <h2 id="relationDialogTitle">关系说明</h2>
+      <button id="closeRelationDialog" class="dialog-close" type="button" title="关闭" aria-label="关闭关系说明">×</button>
+    </header>
+    <div class="dialog-body">
+      <p class="direction-rule"><strong>A → B</strong> 表示 A 为来源知识点，B 为目标知识点。通常建议先理解 A，再学习 B；箭头表示知识支撑方向，不表示程序实际运行顺序。</p>
+
+      <div class="relation-explanations">
+        <section class="relation-explanation">
+          <span class="legend-line core" aria-hidden="true"></span>
+          <div>
+            <h3>核心前置</h3>
+            <p>目标知识点高度依赖来源知识点，属于推荐学习路径中的关键连接。跳过来源节点，通常会明显增加理解难度。</p>
+          </div>
+        </section>
+
+        <section class="relation-explanation">
+          <span class="legend-line prerequisite" aria-hidden="true"></span>
+          <div>
+            <h3>一般前置</h3>
+            <p>来源知识点能够帮助理解目标知识点，但不是唯一入口。已有相关经验时可以先学习目标节点，再按需要回看。</p>
+          </div>
+        </section>
+
+        <section class="relation-explanation">
+          <span class="legend-line related" aria-hidden="true"></span>
+          <div>
+            <h3>横向关联</h3>
+            <p>两个知识点经常一起使用或可以相互比较，不强调严格先后。图中使用虚线且不显示方向箭头。</p>
+          </div>
+        </section>
+      </div>
+
+      <p class="relation-example">例如，<code>C31 地址与内存 → C32 指针基础</code> 是核心前置，因为理解地址是学习指针的关键基础；<code>C18 while 循环 ↔ C19 for 循环</code> 是横向关联，因为两者可以表达许多相同的循环任务。</p>
+    </div>
+  </dialog>
+
+  <script>
+    "use strict";
+
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const CANVAS = { width: 2040, height: 1180 };
+    const REGION_LAYOUT = {
+      foundation:  { x: 40,   y: 40,  width: 500, height: 270, cols: 2, nodeWidth: 200 },
+      data:        { x: 570,  y: 40,  width: 860, height: 370, cols: 5, nodeWidth: 145 },
+      control:     { x: 1460, y: 40,  width: 540, height: 370, cols: 3, nodeWidth: 145 },
+      functions:   { x: 40,   y: 350, width: 580, height: 350, cols: 3, nodeWidth: 160 },
+      arrays:      { x: 660,  y: 450, width: 570, height: 280, cols: 2, nodeWidth: 220 },
+      memory:      { x: 1270, y: 450, width: 730, height: 310, cols: 3, nodeWidth: 190 },
+      types:       { x: 40,   y: 760, width: 500, height: 280, cols: 2, nodeWidth: 200 },
+      preprocess:  { x: 590,  y: 810, width: 520, height: 250, cols: 2, nodeWidth: 210 },
+      application: { x: 1150, y: 820, width: 850, height: 300, cols: 2, nodeWidth: 330 }
+    };
+
+    const state = {
+      data: null,
+      nodeById: new Map(),
+      moduleById: new Map(),
+      nodeElements: new Map(),
+      edgeElements: [],
+      labelElements: [],
+      selectedNodeId: null,
+      selectedModule: "all",
+      selectedRelation: "all",
+      selectedPath: "all",
+      searchQuery: "",
+      showLabels: false,
+      viewBox: { x: 0, y: 0, width: CANVAS.width, height: CANVAS.height },
+      pan: null,
+      drag: null
+    };
+
+    const svg = document.getElementById("graphSvg");
+    const regionLayer = document.getElementById("regionLayer");
+    const edgeLayer = document.getElementById("edgeLayer");
+    const edgeLabelLayer = document.getElementById("edgeLabelLayer");
+    const nodeLayer = document.getElementById("nodeLayer");
+    const loadingState = document.getElementById("loadingState");
+    const detailContent = document.getElementById("detailContent");
+    const graphStatus = document.getElementById("graphStatus");
+    const searchInput = document.getElementById("searchInput");
+
+    function svgElement(name, attributes = {}) {
+      const element = document.createElementNS(SVG_NS, name);
+      Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+      return element;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function assignInitialPositions() {
+      state.data.modules.forEach((module) => {
+        const region = REGION_LAYOUT[module.id];
+        const nodes = state.data.nodes.filter((node) => node.module === module.id);
+        const nodeHeight = 60;
+        const rows = Math.ceil(nodes.length / region.cols);
+        const horizontalSpace = region.width - 60 - region.cols * region.nodeWidth;
+        const gapX = region.cols > 1 ? Math.max(12, horizontalSpace / (region.cols - 1)) : 0;
+        const gridWidth = region.cols * region.nodeWidth + (region.cols - 1) * gapX;
+        const startX = region.x + (region.width - gridWidth) / 2;
+        const availableY = region.height - 74;
+        const gapY = rows > 1 ? Math.min(34, (availableY - rows * nodeHeight) / (rows - 1)) : 0;
+        const gridHeight = rows * nodeHeight + (rows - 1) * gapY;
+        const startY = region.y + 52 + Math.max(0, (availableY - gridHeight) / 2);
+
+        nodes.forEach((node, index) => {
+          const row = Math.floor(index / region.cols);
+          const col = index % region.cols;
+          const columnsInRow = Math.min(region.cols, nodes.length - row * region.cols);
+          const rowWidth = columnsInRow * region.nodeWidth + (columnsInRow - 1) * gapX;
+          const rowStartX = region.x + (region.width - rowWidth) / 2;
+          node.width = region.nodeWidth;
+          node.height = nodeHeight;
+          node.x = rowStartX + col * (region.nodeWidth + gapX);
+          node.y = startY + row * (nodeHeight + gapY);
+          node.initialX = node.x;
+          node.initialY = node.y;
+        });
+      });
+    }
+
+    function splitLabel(text, maxUnits) {
+      const units = (character) => /[\u0000-\u00ff]/.test(character) ? 0.58 : 1;
+      const lines = [];
+      let current = "";
+      let currentUnits = 0;
+
+      for (const character of text) {
+        const nextUnits = units(character);
+        if (current && currentUnits + nextUnits > maxUnits) {
+          lines.push(current.trim());
+          current = character;
+          currentUnits = nextUnits;
+        } else {
+          current += character;
+          currentUnits += nextUnits;
+        }
+      }
+      if (current.trim()) lines.push(current.trim());
+
+      if (lines.length > 2) {
+        const second = lines.slice(1).join("");
+        let shortened = "";
+        let used = 0;
+        for (const character of second) {
+          const nextUnits = units(character);
+          if (used + nextUnits > maxUnits - 1) break;
+          shortened += character;
+          used += nextUnits;
+        }
+        return [lines[0], shortened + "…"];
+      }
+      return lines;
+    }
+
+    function renderRegions() {
+      regionLayer.replaceChildren();
+      state.data.modules.forEach((module) => {
+        const region = REGION_LAYOUT[module.id];
+        const count = state.data.nodes.filter((node) => node.module === module.id).length;
+        const group = svgElement("g", { class: "module-region", "data-module": module.id });
+        const rect = svgElement("rect", {
+          x: region.x,
+          y: region.y,
+          width: region.width,
+          height: region.height,
+          rx: 8,
+          ry: 8,
+          stroke: module.color
+        });
+        const title = svgElement("text", {
+          x: region.x + 18,
+          y: region.y + 28,
+          class: "region-title",
+          fill: module.color
+        });
+        title.textContent = module.name;
+        const countText = svgElement("text", {
+          x: region.x + region.width - 18,
+          y: region.y + 28,
+          class: "region-count",
+          "text-anchor": "end"
+        });
+        countText.textContent = `${count} 个知识点`;
+        group.append(rect, title, countText);
+        regionLayer.append(group);
+      });
+    }
+
+    function boundaryPoint(node, towardX, towardY) {
+      const centerX = node.x + node.width / 2;
+      const centerY = node.y + node.height / 2;
+      const dx = towardX - centerX;
+      const dy = towardY - centerY;
+      if (dx === 0 && dy === 0) return { x: centerX, y: centerY };
+      const scaleX = dx === 0 ? Infinity : (node.width / 2) / Math.abs(dx);
+      const scaleY = dy === 0 ? Infinity : (node.height / 2) / Math.abs(dy);
+      const scale = Math.min(scaleX, scaleY) * 0.94;
+      return { x: centerX + dx * scale, y: centerY + dy * scale };
+    }
+
+    function edgeGeometry(edge, index) {
+      const source = state.nodeById.get(edge.source);
+      const target = state.nodeById.get(edge.target);
+      const sourceCenter = { x: source.x + source.width / 2, y: source.y + source.height / 2 };
+      const targetCenter = { x: target.x + target.width / 2, y: target.y + target.height / 2 };
+      const start = boundaryPoint(source, targetCenter.x, targetCenter.y);
+      const end = boundaryPoint(target, sourceCenter.x, sourceCenter.y);
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+      const length = Math.max(1, Math.hypot(dx, dy));
+      const hash = (edge.source.charCodeAt(2) * 7 + edge.target.charCodeAt(2) * 11 + index) % 7;
+      const curve = (hash - 3) * Math.min(16, length * 0.018);
+      const normalX = -dy / length;
+      const normalY = dx / length;
+      const controlX = (start.x + end.x) / 2 + normalX * curve;
+      const controlY = (start.y + end.y) / 2 + normalY * curve;
+      const labelX = 0.25 * start.x + 0.5 * controlX + 0.25 * end.x;
+      const labelY = 0.25 * start.y + 0.5 * controlY + 0.25 * end.y;
+      return {
+        path: `M ${start.x} ${start.y} Q ${controlX} ${controlY} ${end.x} ${end.y}`,
+        labelX,
+        labelY
+      };
+    }
+
+    function renderEdges() {
+      edgeLayer.replaceChildren();
+      edgeLabelLayer.replaceChildren();
+      state.edgeElements = [];
+      state.labelElements = [];
+
+      state.data.edges.forEach((edge, index) => {
+        const geometry = edgeGeometry(edge, index);
+        const path = svgElement("path", {
+          d: geometry.path,
+          class: `edge ${edge.type}`,
+          "data-source": edge.source,
+          "data-target": edge.target,
+          "data-type": edge.type,
+          tabindex: "-1"
+        });
+        const title = svgElement("title");
+        const source = state.nodeById.get(edge.source);
+        const target = state.nodeById.get(edge.target);
+        title.textContent = `${source.id} ${source.title} → ${target.id} ${target.title}：${edge.label}`;
+        path.append(title);
+        path.addEventListener("click", (event) => {
+          event.stopPropagation();
+          selectNode(edge.target, true);
+        });
+        edgeLayer.append(path);
+
+        const label = svgElement("text", {
+          x: geometry.labelX,
+          y: geometry.labelY,
+          class: "edge-label",
+          "data-source": edge.source,
+          "data-target": edge.target,
+          "data-type": edge.type
+        });
+        label.textContent = edge.label;
+        edgeLabelLayer.append(label);
+
+        state.edgeElements.push({ edge, element: path });
+        state.labelElements.push({ edge, element: label });
+      });
+    }
+
+    function renderNodes() {
+      nodeLayer.replaceChildren();
+      state.nodeElements.clear();
+
+      state.data.nodes.forEach((node) => {
+        const module = state.moduleById.get(node.module);
+        const group = svgElement("g", {
+          class: "node",
+          transform: `translate(${node.x} ${node.y})`,
+          "data-node": node.id,
+          tabindex: "0",
+          role: "button",
+          "aria-label": `${node.id} ${node.title}`
+        });
+        const rect = svgElement("rect", {
+          class: "node-shape",
+          width: node.width,
+          height: node.height,
+          stroke: module.color
+        });
+        const idText = svgElement("text", {
+          x: 12,
+          y: 15,
+          class: "node-id",
+          fill: module.color
+        });
+        idText.textContent = node.id;
+
+        const titleText = svgElement("text", {
+          x: node.width / 2,
+          y: node.height / 2 + 6,
+          class: "node-title"
+        });
+        const lines = splitLabel(node.title, Math.max(8, node.width / 13));
+        const firstY = lines.length === 1 ? 0 : -7;
+        lines.forEach((line, index) => {
+          const tspan = svgElement("tspan", {
+            x: node.width / 2,
+            dy: index === 0 ? firstY : 15
+          });
+          tspan.textContent = line;
+          titleText.append(tspan);
+        });
+
+        const title = svgElement("title");
+        title.textContent = `${node.id} ${node.title}\n${node.summary}`;
+        group.append(rect, idText, titleText, title);
+        group.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (!state.drag || !state.drag.moved) selectNode(node.id, false);
+        });
+        group.addEventListener("dblclick", (event) => {
+          event.stopPropagation();
+          openDocument(node);
+        });
+        group.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectNode(node.id, true);
+          }
+        });
+        group.addEventListener("pointerdown", (event) => startNodeDrag(event, node));
+        nodeLayer.append(group);
+        state.nodeElements.set(node.id, group);
+      });
+    }
+
+    function updateEdgeGeometry() {
+      state.edgeElements.forEach((entry, index) => {
+        const geometry = edgeGeometry(entry.edge, index);
+        entry.element.setAttribute("d", geometry.path);
+        state.labelElements[index].element.setAttribute("x", geometry.labelX);
+        state.labelElements[index].element.setAttribute("y", geometry.labelY);
+      });
+    }
+
+    function renderModuleControls() {
+      const moduleList = document.getElementById("moduleList");
+      const mobileSelect = document.getElementById("mobileModuleSelect");
+      moduleList.replaceChildren();
+
+      const allButton = document.createElement("button");
+      allButton.type = "button";
+      allButton.className = "module-button active";
+      allButton.dataset.module = "all";
+      allButton.innerHTML = `<span class="module-swatch" style="background:#87939a"></span><span>全部模块</span><span class="module-count">${state.data.nodes.length}</span>`;
+      allButton.addEventListener("click", () => setModuleFilter("all"));
+      moduleList.append(allButton);
+
+      state.data.modules.forEach((module) => {
+        const count = state.data.nodes.filter((node) => node.module === module.id).length;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "module-button";
+        button.dataset.module = module.id;
+        button.innerHTML = `<span class="module-swatch" style="background:${module.color}"></span><span>${escapeHtml(module.name)}</span><span class="module-count">${count}</span>`;
+        button.addEventListener("click", () => setModuleFilter(module.id));
+        moduleList.append(button);
+
+        const option = document.createElement("option");
+        option.value = module.id;
+        option.textContent = module.name;
+        mobileSelect.append(option);
+      });
+      mobileSelect.addEventListener("change", (event) => setModuleFilter(event.target.value));
+    }
+
+    function renderPathControls() {
+      const select = document.getElementById("pathSelect");
+      state.data.learningPaths.forEach((path) => {
+        const option = document.createElement("option");
+        option.value = path.id;
+        option.textContent = path.name;
+        select.append(option);
+      });
+      select.addEventListener("change", (event) => {
+        state.selectedPath = event.target.value;
+        updateGraphState();
+      });
+    }
+
+    function setModuleFilter(moduleId) {
+      state.selectedModule = moduleId;
+      document.querySelectorAll(".module-button").forEach((button) => {
+        button.classList.toggle("active", button.dataset.module === moduleId);
+      });
+      document.getElementById("mobileModuleSelect").value = moduleId;
+      updateGraphState();
+    }
+
+    function pathNodeSet() {
+      if (state.selectedPath === "all") return new Set();
+      const path = state.data.learningPaths.find((item) => item.id === state.selectedPath);
+      return new Set(path ? path.nodes : []);
+    }
+
+    function connectedNodeSet(nodeId) {
+      const set = new Set([nodeId]);
+      state.data.edges.forEach((edge) => {
+        if (edge.source === nodeId) set.add(edge.target);
+        if (edge.target === nodeId) set.add(edge.source);
+      });
+      return set;
+    }
+
+    function updateGraphState() {
+      if (!state.data) return;
+      const selectedConnections = state.selectedNodeId ? connectedNodeSet(state.selectedNodeId) : new Set();
+      const pathNodes = pathNodeSet();
+      const query = state.searchQuery.trim().toLowerCase();
+      let visibleEdgeCount = 0;
+
+      state.data.nodes.forEach((node) => {
+        const element = state.nodeElements.get(node.id);
+        const inModule = state.selectedModule === "all" || node.module === state.selectedModule;
+        const matchesSearch = !query || node.id.toLowerCase().includes(query) || node.title.toLowerCase().includes(query);
+        const inSelectedContext = !state.selectedNodeId || selectedConnections.has(node.id);
+        const inPath = pathNodes.has(node.id);
+        const dimmed = !inModule || !matchesSearch || !inSelectedContext || (state.selectedPath !== "all" && !inPath);
+
+        element.classList.toggle("is-dimmed", dimmed);
+        element.classList.toggle("is-selected", node.id === state.selectedNodeId);
+        element.classList.toggle("is-neighbor", Boolean(state.selectedNodeId) && selectedConnections.has(node.id));
+        element.classList.toggle("is-path", inPath);
+        element.classList.toggle("is-search-match", Boolean(query) && matchesSearch);
+      });
+
+      state.edgeElements.forEach(({ edge, element }, index) => {
+        const relationVisible = state.selectedRelation === "all" || edge.type === state.selectedRelation;
+        const moduleVisible = state.selectedModule === "all" ||
+          state.nodeById.get(edge.source).module === state.selectedModule ||
+          state.nodeById.get(edge.target).module === state.selectedModule;
+        const selectedVisible = !state.selectedNodeId || edge.source === state.selectedNodeId || edge.target === state.selectedNodeId;
+        const pathVisible = state.selectedPath === "all" || (pathNodes.has(edge.source) && pathNodes.has(edge.target));
+        const hidden = !relationVisible || !moduleVisible;
+        const dimmed = !selectedVisible || !pathVisible;
+        const highlighted = Boolean(state.selectedNodeId) && selectedVisible && !hidden;
+
+        element.classList.toggle("is-hidden", hidden);
+        element.classList.toggle("is-dimmed", dimmed);
+        element.classList.toggle("is-highlighted", highlighted);
+        state.labelElements[index].element.classList.toggle("is-hidden", hidden);
+        state.labelElements[index].element.classList.toggle("is-dimmed", dimmed);
+        if (!hidden) visibleEdgeCount++;
+      });
+
+      svg.classList.toggle("show-labels", state.showLabels);
+      graphStatus.textContent = `${state.data.nodes.length} 个节点 · ${visibleEdgeCount} 条当前关系`;
+    }
+
+    function relationItem(node, edge) {
+      return `
+        <button class="relation-item" type="button" data-select-node="${node.id}">
+          <span class="relation-node-id" style="color:${state.moduleById.get(node.module).color}">${node.id}</span>
+          <span>
+            <span class="relation-node-title">${escapeHtml(node.title)}</span>
+            <span class="relation-reason">${escapeHtml(edge.label)}</span>
+          </span>
+        </button>`;
+    }
+
+    function relationSection(title, items) {
+      return `
+        <section class="relation-section">
+          <h3>${title}<span>${items.length}</span></h3>
+          <div class="relation-items">
+            ${items.length ? items.join("") : '<span class="empty-relation">暂无直接关系</span>'}
+          </div>
+        </section>`;
+    }
+
+    function renderDetails() {
+      if (!state.data) return;
+      if (!state.selectedNodeId) {
+        const moduleRows = state.data.modules.map((module) => {
+          const count = state.data.nodes.filter((node) => node.module === module.id).length;
+          return `<div class="overview-module"><span class="module-swatch" style="background:${module.color}"></span><span>${escapeHtml(module.name)}</span><span>${count}</span></div>`;
+        }).join("");
+        detailContent.innerHTML = `
+          <h2 class="overview-title">图谱概览</h2>
+          <p class="detail-summary">从基础程序结构出发，经由数据、控制流、函数、数组、内存和模块组织，最终汇入文件处理、调试与综合项目。</p>
+          <div class="overview-stats">
+            <div class="overview-stat"><strong>${state.data.nodes.length}</strong><span>知识点</span></div>
+            <div class="overview-stat"><strong>${state.data.edges.length}</strong><span>关系</span></div>
+            <div class="overview-stat"><strong>${state.data.learningPaths.length}</strong><span>路径</span></div>
+          </div>
+          <p class="panel-label" style="margin-left:0">模块分布</p>
+          ${moduleRows}`;
+        return;
+      }
+
+      const node = state.nodeById.get(state.selectedNodeId);
+      const module = state.moduleById.get(node.module);
+      const incoming = state.data.edges
+        .filter((edge) => edge.target === node.id && edge.type !== "related")
+        .map((edge) => relationItem(state.nodeById.get(edge.source), edge));
+      const outgoing = state.data.edges
+        .filter((edge) => edge.source === node.id && edge.type !== "related")
+        .map((edge) => relationItem(state.nodeById.get(edge.target), edge));
+      const related = state.data.edges
+        .filter((edge) => edge.type === "related" && (edge.source === node.id || edge.target === node.id))
+        .map((edge) => {
+          const otherId = edge.source === node.id ? edge.target : edge.source;
+          return relationItem(state.nodeById.get(otherId), edge);
+        });
+
+      detailContent.innerHTML = `
+        <div class="detail-eyebrow">
+          <span class="detail-dot" style="background:${module.color}"></span>
+          <span>${node.id} · ${escapeHtml(module.name)}</span>
+        </div>
+        <h2>${escapeHtml(node.title)}</h2>
+        <p class="detail-summary">${escapeHtml(node.summary)}</p>
+        <a class="doc-button" href="${encodeURI(node.doc)}" target="_blank" rel="noopener">打开学习文档 <span aria-hidden="true">↗</span></a>
+        ${relationSection("直接前置", incoming)}
+        ${relationSection("后续知识", outgoing)}
+        ${relationSection("横向关联", related)}`;
+
+      detailContent.querySelectorAll("[data-select-node]").forEach((button) => {
+        button.addEventListener("click", () => selectNode(button.dataset.selectNode, true));
+      });
+    }
+
+    function selectNode(nodeId, center) {
+      if (!state.nodeById.has(nodeId)) return;
+      state.selectedNodeId = nodeId;
+      updateGraphState();
+      renderDetails();
+      if (center) centerNode(nodeId);
+    }
+
+    function clearSelection() {
+      state.selectedNodeId = null;
+      updateGraphState();
+      renderDetails();
+    }
+
+    function openDocument(node) {
+      window.open(encodeURI(node.doc), "_blank", "noopener");
+    }
+
+    function applyViewBox() {
+      svg.setAttribute("viewBox", `${state.viewBox.x} ${state.viewBox.y} ${state.viewBox.width} ${state.viewBox.height}`);
+    }
+
+    function clientToGraph(clientX, clientY) {
+      const rect = svg.getBoundingClientRect();
+      return {
+        x: state.viewBox.x + ((clientX - rect.left) / rect.width) * state.viewBox.width,
+        y: state.viewBox.y + ((clientY - rect.top) / rect.height) * state.viewBox.height
+      };
+    }
+
+    function zoomAt(clientX, clientY, factor) {
+      const before = clientToGraph(clientX, clientY);
+      const nextWidth = Math.max(520, Math.min(4200, state.viewBox.width * factor));
+      const nextHeight = nextWidth * (state.viewBox.height / state.viewBox.width);
+      const rect = svg.getBoundingClientRect();
+      const ratioX = (clientX - rect.left) / rect.width;
+      const ratioY = (clientY - rect.top) / rect.height;
+      state.viewBox = {
+        x: before.x - ratioX * nextWidth,
+        y: before.y - ratioY * nextHeight,
+        width: nextWidth,
+        height: nextHeight
+      };
+      applyViewBox();
+    }
+
+    function centerNode(nodeId) {
+      const node = state.nodeById.get(nodeId);
+      state.viewBox.x = node.x + node.width / 2 - state.viewBox.width / 2;
+      state.viewBox.y = node.y + node.height / 2 - state.viewBox.height / 2;
+      applyViewBox();
+    }
+
+    function fitGraph() {
+      state.viewBox = { x: 0, y: 0, width: CANVAS.width, height: CANVAS.height };
+      applyViewBox();
+    }
+
+    function startNodeDrag(event, node) {
+      if (event.button !== 0) return;
+      event.stopPropagation();
+      const point = clientToGraph(event.clientX, event.clientY);
+      state.drag = {
+        node,
+        offsetX: point.x - node.x,
+        offsetY: point.y - node.y,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false
+      };
+      svg.setPointerCapture(event.pointerId);
+    }
+
+    function onPointerMove(event) {
+      if (state.drag) {
+        const point = clientToGraph(event.clientX, event.clientY);
+        if (Math.hypot(event.clientX - state.drag.startX, event.clientY - state.drag.startY) > 4) {
+          state.drag.moved = true;
+        }
+        state.drag.node.x = point.x - state.drag.offsetX;
+        state.drag.node.y = point.y - state.drag.offsetY;
+        const element = state.nodeElements.get(state.drag.node.id);
+        element.setAttribute("transform", `translate(${state.drag.node.x} ${state.drag.node.y})`);
+        updateEdgeGeometry();
+        return;
+      }
+
+      if (state.pan) {
+        const rect = svg.getBoundingClientRect();
+        const dx = (event.clientX - state.pan.clientX) * state.pan.viewBox.width / rect.width;
+        const dy = (event.clientY - state.pan.clientY) * state.pan.viewBox.height / rect.height;
+        state.viewBox.x = state.pan.viewBox.x - dx;
+        state.viewBox.y = state.pan.viewBox.y - dy;
+        applyViewBox();
+      }
+    }
+
+    function endPointer(event) {
+      if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+      if (state.drag) {
+        const moved = state.drag.moved;
+        const nodeId = state.drag.node.id;
+        state.drag = null;
+        if (!moved) selectNode(nodeId, false);
+      }
+      state.pan = null;
+      svg.classList.remove("panning");
+    }
+
+    function bindInteractions() {
+      document.getElementById("relationFilter").addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-relation]");
+        if (!button) return;
+        state.selectedRelation = button.dataset.relation;
+        document.querySelectorAll("[data-relation]").forEach((item) => item.classList.toggle("active", item === button));
+        updateGraphState();
+      });
+
+      document.getElementById("labelToggle").addEventListener("change", (event) => {
+        state.showLabels = event.target.checked;
+        updateGraphState();
+      });
+
+      searchInput.addEventListener("input", (event) => {
+        state.searchQuery = event.target.value;
+        updateGraphState();
+      });
+
+      searchInput.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        const query = state.searchQuery.trim().toLowerCase();
+        const match = state.data.nodes.find((node) => node.id.toLowerCase().includes(query) || node.title.toLowerCase().includes(query));
+        if (match) selectNode(match.id, true);
+      });
+
+      document.getElementById("clearSearch").addEventListener("click", () => {
+        searchInput.value = "";
+        state.searchQuery = "";
+        updateGraphState();
+        searchInput.focus();
+      });
+
+      document.querySelector(".view-actions").addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+        const rect = svg.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        if (button.dataset.action === "relations") document.getElementById("relationDialog").showModal();
+        if (button.dataset.action === "zoom-in") zoomAt(centerX, centerY, 0.82);
+        if (button.dataset.action === "zoom-out") zoomAt(centerX, centerY, 1.22);
+        if (button.dataset.action === "fit") fitGraph();
+        if (button.dataset.action === "reset") {
+          state.data.nodes.forEach((node) => {
+            node.x = node.initialX;
+            node.y = node.initialY;
+            state.nodeElements.get(node.id).setAttribute("transform", `translate(${node.x} ${node.y})`);
+          });
+          updateEdgeGeometry();
+          fitGraph();
+        }
+      });
+
+      const relationDialog = document.getElementById("relationDialog");
+      document.getElementById("closeRelationDialog").addEventListener("click", () => relationDialog.close());
+      relationDialog.addEventListener("click", (event) => {
+        if (event.target === relationDialog) relationDialog.close();
+      });
+
+      svg.addEventListener("wheel", (event) => {
+        event.preventDefault();
+        zoomAt(event.clientX, event.clientY, event.deltaY > 0 ? 1.12 : 0.88);
+      }, { passive: false });
+
+      svg.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0 || event.target.closest(".node")) return;
+        state.pan = {
+          clientX: event.clientX,
+          clientY: event.clientY,
+          viewBox: { ...state.viewBox }
+        };
+        svg.classList.add("panning");
+        svg.setPointerCapture(event.pointerId);
+      });
+      svg.addEventListener("pointermove", onPointerMove);
+      svg.addEventListener("pointerup", endPointer);
+      svg.addEventListener("pointercancel", endPointer);
+      svg.addEventListener("click", (event) => {
+        if (event.target === svg || event.target.closest("#regionLayer")) clearSelection();
+      });
+    }
+
+    async function initialize() {
+      try {
+        const response = await fetch("c-knowledge-graph.json", { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        state.data = await response.json();
+        state.data.nodes.forEach((node) => state.nodeById.set(node.id, node));
+        state.data.modules.forEach((module) => state.moduleById.set(module.id, module));
+
+        assignInitialPositions();
+        renderRegions();
+        renderEdges();
+        renderNodes();
+        renderModuleControls();
+        renderPathControls();
+        bindInteractions();
+        renderDetails();
+        updateGraphState();
+        fitGraph();
+
+        document.getElementById("nodeMeta").textContent = `${state.data.nodes.length} 个知识点`;
+        document.getElementById("edgeMeta").textContent = `${state.data.edges.length} 条关系`;
+        loadingState.remove();
+      } catch (error) {
+        loadingState.classList.add("error");
+        loadingState.textContent = "图谱数据载入失败。请通过本地 Web 服务器打开此页面，并确认 c-knowledge-graph.json 与 HTML 位于同一目录。";
+        console.error(error);
+      }
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
